@@ -136,6 +136,16 @@ td {
     width: 20px;
     background:url(img/pen-solid.svg) right 0 no-repeat;
 }
+.delete {
+    border: 0;
+    height: 30px;
+    width: 30px;
+    background:url(img/xmark-solid.svg) right 0 no-repeat;
+    display: block;
+    position: absolute;
+    right: -90px;
+    top: -10px;
+}
 button {
     cursor: pointer;
 }
