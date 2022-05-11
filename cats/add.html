@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cats</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="img/logo.png>">
+    <script>
+        function showPopup(text = "") {
+            const popup = document.querySelector(".popup");
+            popup.classList.add("active");
+            popup.firstElementChild.innerHTML = text;
+            popup.lastElementChild.addEventListener("click", function() {
+                popup.classList.remove("active");
+            }, {once: true});
+        }
+    </script>
+</head>
+<body>
+    <header>
+       <a href="/index.html" class="logo"></a>
+       <span class="logo__text">Бабуленькины котики</span>
+       <nav>
+           <a href="/index.html">Главная страница</a>
+           <a href="/add.html">Добавить котиков</a>
+       </nav>
+    </header>
+    <main>
+        <h1>Добавить котика</h1>
+        <form id="addCat">
+            <input type="number" name="id" placeholder="Порядковый номер" required>
+            <input type="text" name="name" placeholder="Имя" required>
+            <input type="number" name="age" placeholder="Возраст">
+            <input type="number" name="rate" placeholder="Рейтинг">
+            <input type="text" name="favourite" placeholder="Любимчик?">
+            <input type="text" name="img_link" placeholder="Фото">
+            <textarea name="description" placeholder="Еще немного о питомце"></textarea>
+            <button type="submit">Добавить</button>
+        </form>
+    </main>
+    <footer>&copy;2022</footer>
+    <div class="popup">
+        <div class="popup-block"></div>
+        <div class="popup-close"></div>
+    </div>
+    <script>
+
+        let path = {
+            getAll: "https://sb-cats.herokuapp.com/api/2/krauserty/show",
+            getOne: "https://sb-cats.herokuapp.com/api/2/krauserty/show/",
+            getId: "https://sb-cats.herokuapp.com/api/2/krauserty/ids",
+            add: "https://sb-cats.herokuapp.com/api/2/krauserty/add",
+            upd: "https://sb-cats.herokuapp.com/api/2/krauserty/update/",
+            del: "https://sb-cats.herokuapp.com/api/2/krauserty/delete/"
+        }
+
+        document.forms.addCat.addEventListener("submit", function(e){
+            e.preventDefault();
+            let body = {};
+            for (let i = 0; i < this.elements.length; i++) {
+                let el = this.elements[i];
+                if (el.name) {
+                    body[el.name] = el.value;
+                }
+            }
+            body.favourite = !!body.favourite;
+            console.log(body);
+            console.log(JSON.stringify(body));
+            fetch(path.add, {
+                method: "post",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify(body)
+            })
+                .then(res => res.json())
+                .then(result => {
+                    console.log(result);
+                    if (result.message === "ok") {
+                        let catsSt = window.localStorage.getItem("cats");
+                        catsSt = JSON.parse(catsSt);
+                        console.log(catsSt);
+                        catsSt.push(body);
+                        localStorage.setItem("cats", JSON.stringify(catsSt));
+                        this.reset();
+                    } else {
+                        showPopup(result.message);
+                    }
+                })
+        });
+    </script>
+</body>
+</html>
